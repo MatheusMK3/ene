@@ -5,7 +5,7 @@ import Data exposing (Class, Course, availableCourses, courseToString, defaultCo
 import Decoder exposing (decodeCsv)
 import Html exposing (Html, div, h2, option, select, span, table, td, text, th, tr)
 import Html.Attributes exposing (id, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onMouseOver)
 import Requests exposing (CsvResponse(..), fetchCourseSemesterCSV, stripCSVParameterString)
 import Utils exposing (errorToString)
 
@@ -23,6 +23,7 @@ type Msg
     = SelectCourse String
     | SelectSemester String
     | Order String
+    | GradesPopup String
     | CSV CsvResponse
 
 
@@ -96,6 +97,9 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        GradesPopup _ ->
+            ( model, Cmd.none )
+
         CSV response ->
             case response of
                 GotCSV result ->
@@ -162,7 +166,7 @@ compactDataHeader =
 
 classToCompactDataElement : Class -> Html Msg
 classToCompactDataElement class =
-    tr []
+    tr [ onMouseOver (GradesPopup class.courseCode) ]
         [ td [] [ text class.center ]
         , td [] [ text class.department ]
         , td [] [ text class.classCourse ]
